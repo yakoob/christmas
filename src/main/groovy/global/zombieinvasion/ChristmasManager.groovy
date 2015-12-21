@@ -9,8 +9,6 @@ import groovy.util.logging.Log
 class ChristmasManager extends BaseActor {
 
     def akkaService = Holders.applicationContext.getBean("akkaService")
-    def httpClientService = Holders.applicationContext.getBean("httpClientService")
-    def mqttClientService = Holders.applicationContext.getBean("mqttClientService")
 
     private ActorRef lightManager = null
 
@@ -28,6 +26,10 @@ class ChristmasManager extends BaseActor {
             if (message == "PLAY_JingleBells") {
 
                 lightManager.tell("PLAY_JingleBells", self)
+
+            } else if (message == "PLAY_CoolLights") {
+
+                lightManager.tell("PLAY_CoolLights", akkaService.actorNoSender())
 
             } else if (message == "STOP_SHOW") {
 

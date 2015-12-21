@@ -48,6 +48,11 @@ class LightManager extends BaseActor {
 
                 scheduleLight("0", Status.ALL_ON, 3000l)
 
+            } else if (message == "PLAY_CoolLights"){
+
+                println "playing cool lights"
+                coolLights().each { scheduleLight(it.node, it.status, it.when) }
+
             } else if (message == "STOP_LIGHTS") {
 
                 reset()
@@ -74,12 +79,9 @@ class LightManager extends BaseActor {
     private boolean isIdle(){
         if ((when - timersTotalWhen) <= 0) {
             println "isIdle"
-            lightManagerStatus = Status.ON
-
             return true
         } else {
             println "program running"
-            lightManagerStatus = Status.OFF
             return false
         }
 
@@ -333,5 +335,44 @@ class LightManager extends BaseActor {
     }
 
 
+    def coolLights(){
+
+        def instructions = []
+        def nodes = ["9","3","4","5","6","7"]
+        def randomNodes = nodes.clone()
+
+        10.times {
+
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+
+            5.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":100])
+                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":10])
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
+
+            5.times {
+                nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":250]) }
+                nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":250]) }
+            }
+
+
+            20.times {
+                Collections.shuffle(randomNodes)
+                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":200])
+                instructions.add(["node":"0", "status":Status.ALL_ON, "when":25])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
+
+            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":10]) }
+
+        }
+
+        return instructions
+
+    }
 
 }
