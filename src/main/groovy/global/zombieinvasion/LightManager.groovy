@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 import grails.converters.JSON
 
-enum Status {ON,BLINK,OFF,ALL_ON,ALL_OFF,ALL_BLINK}
+enum Status {ON,BLINK,OFF,ALL_ON,ALL_OFF,ALL_BLINK,BACK_AND_FORTH}
 
 @Log
 class LightManager extends BaseActor {
@@ -15,7 +15,7 @@ class LightManager extends BaseActor {
     def httpClientService = Holders.applicationContext.getBean("httpClientService")
     def mqttClientService = Holders.applicationContext.getBean("mqttClientService")
 
-    private static final String lightControllerIp = "192.168.20.1"
+    private static final String lightControllerIp = "192.168.20.161"
 
     Status lightManagerStatus = Status.ON
 
@@ -50,8 +50,16 @@ class LightManager extends BaseActor {
 
             } else if (message == "PLAY_CoolLights"){
 
+                if (!isIdle()) {
+                    println "can not run PLAY_JingleBells because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
+                    return
+                }
+
+                reset()
+
                 println "playing cool lights"
                 coolLights().each { scheduleLight(it.node, it.status, it.when) }
+                scheduleLight("0", Status.ALL_ON, 3000l)
 
             } else if (message == "STOP_LIGHTS") {
 
@@ -343,31 +351,41 @@ class LightManager extends BaseActor {
 
         10.times {
 
-            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":350])
 
-            5.times {
-                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":100])
+            6.times {
+                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+
+            6.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
                 instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
             }
 
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":10])
+            instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":2000])
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
 
-            5.times {
-                nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":250]) }
-                nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":250]) }
+            6.times {
+                nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":350]) }
+                nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":350]) }
             }
 
+            3.times {
+                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            }
 
-            20.times {
+            6.times {
                 Collections.shuffle(randomNodes)
-                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":200])
-                instructions.add(["node":"0", "status":Status.ALL_ON, "when":25])
+                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":350])
+                instructions.add(["node":"0", "status":Status.ALL_ON, "when":350])
             }
 
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
 
-            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":10]) }
+            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":300]) }
 
         }
 

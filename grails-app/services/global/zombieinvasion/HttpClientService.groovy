@@ -40,6 +40,12 @@ class HttpClientService {
             path = path + 5
             println("http tell lights: ALL_BLINK")
 
+        } else if (status == Status.BACK_AND_FORTH){
+
+            path = path + 6
+            println("http tell lights: BACK_AND_FORTH")
+
+
         }
 
         def http = new AsyncHTTPBuilder(
