@@ -31,6 +31,10 @@ class ChristmasManager extends BaseActor {
 
                 lightManager.tell("PLAY_CoolLights", akkaService.actorNoSender())
 
+            } else if (message == "PLAY_WhiteChristmas") {
+
+                lightManager.tell("PLAY_WhiteChristmas", akkaService.actorNoSender())
+
             } else if (message == "STOP_SHOW") {
 
                 lightManager.tell("STOP_LIGHTS", akkaService.actorNoSender())

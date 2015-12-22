@@ -51,14 +51,33 @@ class LightManager extends BaseActor {
             } else if (message == "PLAY_CoolLights"){
 
                 if (!isIdle()) {
-                    println "can not run PLAY_JingleBells because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
+                    println "can not run PLAY_CoolLights because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
                     return
                 }
 
                 reset()
 
+                currentSong = "christmas_is_coming"
+                actionMusicBellsMusic("play", this.currentSong)
+
                 println "playing cool lights"
                 coolLights().each { scheduleLight(it.node, it.status, it.when) }
+                scheduleLight("0", Status.ALL_ON, 3000l)
+
+            } else if (message == "PLAY_WhiteChristmas"){
+
+                if (!isIdle()) {
+                    println "can not run PLAY_WhiteChristmas because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
+                    return
+                }
+
+                reset()
+
+                currentSong = "white_christmas"
+                actionMusicBellsMusic("play", this.currentSong)
+
+                println "playing white_christmas"
+                whiteChristmasLights().each { scheduleLight(it.node, it.status, it.when) }
                 scheduleLight("0", Status.ALL_ON, 3000l)
 
             } else if (message == "STOP_LIGHTS") {
@@ -229,13 +248,16 @@ class LightManager extends BaseActor {
 
 
 
-        11.times{
+        10.times{
             def nodes = ["9","3","4","5","6","7"]
             Collections.shuffle(nodes)
-            instructions.add(["node":"${nodes.first()}", "status":Status.BLINK, "when":400])
+            instructions.add(["node":"${nodes.first()}", "status":Status.BLINK, "when":350])
         }
-        instructions.add(["node":"0", "status":Status.ALL_ON, "when":250])
-        instructions.add(["node":"0", "status":Status.ALL_OFF, "when":1100])
+
+        instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+
+        instructions.add(["node":"0", "status":Status.ALL_ON, "when":500])
+        instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1100])
 
 
 
@@ -349,7 +371,61 @@ class LightManager extends BaseActor {
         def nodes = ["9","3","4","5","6","7"]
         def randomNodes = nodes.clone()
 
-        10.times {
+        3.times {
+
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":350])
+
+            2.times {
+                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+
+            4.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
+                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+
+            instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":2000])
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
+
+            4.times {
+                nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":350]) }
+                nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":350]) }
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+
+            2.times {
+                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            }
+
+            4.times {
+                Collections.shuffle(randomNodes)
+                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":350])
+                instructions.add(["node":"0", "status":Status.ALL_ON, "when":350])
+            }
+
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
+
+            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":300]) }
+
+        }
+
+        return instructions
+
+    }
+
+    def whiteChristmasLights(){
+
+        def instructions = []
+        def nodes = ["9","3","4","5","6","7"]
+        def randomNodes = nodes.clone()
+
+        2.times {
 
             instructions.add(["node":"0", "status":Status.ALL_OFF, "when":350])
 
@@ -359,33 +435,29 @@ class LightManager extends BaseActor {
 
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
 
-            6.times {
+            4.times {
                 instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
                 instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
             }
 
-            instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
-            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":2000])
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
-
-            6.times {
+            4.times {
                 nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":350]) }
                 nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":350]) }
             }
 
-            3.times {
-                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
-            }
-
-            6.times {
-                Collections.shuffle(randomNodes)
-                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":350])
-                instructions.add(["node":"0", "status":Status.ALL_ON, "when":350])
-            }
-
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
 
-            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":300]) }
+            3.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
+                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+            }
+
+            3.times{
+                2.times {
+                    instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+                }
+                instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+            }
 
         }
 

@@ -24,6 +24,14 @@ class TestController {
 
     }
 
+    def white() {
+
+        akkaService.christmasManager.tell("PLAY_WhiteChristmas", akkaService.actorNoSender())
+        render "PLAY_WhiteChristmas"
+
+    }
+
+
     def stop() {
 
         akkaService.christmasManager.tell("STOP_SHOW", akkaService.actorNoSender())
