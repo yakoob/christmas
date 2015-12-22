@@ -77,35 +77,51 @@ void servoCommand(YunClient client) {
 
     value = client.parseInt();
 
-    if (value == 1) {
+    if (value == 1) { // turn pin on
 
-      digitalWrite(pin, HIGH);
+        digitalWrite(pin, HIGH);
 
-    } else if (value == 2) {
+    } else if (value == 2) { // blink pin
 
-      digitalWrite(pin, HIGH);
-      delay(250);
-      digitalWrite(pin, LOW);
+        digitalWrite(pin, HIGH);
+        normalDelay();
+        digitalWrite(pin, LOW);
 
-    } else if (value == 3) {
+    } else if (value == 3) { // all pins off
 
-      allOff();
+        allOff();
 
-    } else if (value == 4) {
+    } else if (value == 4) { // all pins on
 
-      allOn();
+        allOn();
 
-    }  else if (value == 5) {
+    }  else if (value == 5) { // all pins blink
 
-      allBlink();
+        allBlink();
 
-    }  else if (value == 6) {
+    }  else if (value == 6) { // all pins crawl
 
-      backAndForth();
+        crawl();
 
-    }  else if (value == 0) {
+    }  else if (value == 7) { // all pins back and forth quickly
 
-      digitalWrite(pin, LOW);
+       backAndForth();
+
+    }  else if (value == 8) { // all pins from outer in
+
+       outerIn();
+
+    }  else if (value == 9) { // all pins inner out
+
+       innerOut();
+
+    }  else if (value == 10) { // all pins go crazy
+
+        bannanas();
+
+    }  else if (value == 0) { // turn pin off
+
+        digitalWrite(pin, LOW);
 
     }
 
@@ -113,86 +129,114 @@ void servoCommand(YunClient client) {
 
 }
 
+
+void reset(){
+  allOff();
+  fastDelay();
+}
+
+void fastDelay(){
+  delay(100);
+}
+
+void normalDelay(){
+  delay(250);
+}
+
 void allBlink(){
   allOff();
   allOn();
-  delay(250);
+  normalDelay();
   allOff();
-
 }
 
 void allOff() {
     digitalWrite(9, LOW);
-    digitalWrite(2, LOW);
     digitalWrite(3, LOW);
     digitalWrite(4, LOW);
     digitalWrite(5, LOW);
     digitalWrite(6, LOW);
     digitalWrite(7, LOW);
-    digitalWrite(8, LOW);
 }
 
 void allOn() {
     digitalWrite(9, HIGH);
-    digitalWrite(2, HIGH);
     digitalWrite(3, HIGH);
     digitalWrite(4, HIGH);
     digitalWrite(5, HIGH);
     digitalWrite(6, HIGH);
     digitalWrite(7, HIGH);
-    digitalWrite(8, HIGH);
 }
 
+
+void outerIn(){
+    reset();
+
+    digitalWrite(9, HIGH);
+    digitalWrite(7, HIGH);
+    fastDelay();
+
+    digitalWrite(3, HIGH);
+    digitalWrite(6, HIGH);
+    fastDelay();
+
+    digitalWrite(4, HIGH);
+    digitalWrite(5, HIGH);
+}
+
+void innerOut(){
+    reset();
+
+    digitalWrite(4, HIGH);
+    digitalWrite(5, HIGH);
+    fastDelay();
+
+    digitalWrite(3, HIGH);
+    digitalWrite(6, HIGH);
+    fastDelay();
+
+    digitalWrite(9, HIGH);
+    digitalWrite(7, HIGH);
+}
 
 void backAndForth() {
-    digitalWrite(9, HIGH);
-    delay(20);
-    digitalWrite(2, HIGH);
-    delay(20);
-    digitalWrite(3, HIGH);
-    delay(20);
-    digitalWrite(4, HIGH);
-    delay(20);
-    digitalWrite(5, HIGH);
-    delay(20);
-    digitalWrite(6, HIGH);
-    delay(20);
-    digitalWrite(7, HIGH);
-    delay(20);
-    digitalWrite(8, HIGH);
-    delay(20);
-    digitalWrite(8, LOW);
-    delay(20);
-    digitalWrite(7, LOW);
-    delay(20);
-    digitalWrite(6, LOW);
-    delay(20);
-    digitalWrite(5, LOW);
-    delay(20);
-    digitalWrite(4, LOW);
-    delay(20);
-    digitalWrite(3, LOW);
-    delay(20);
-    digitalWrite(2, LOW);
-    delay(20);
-    digitalWrite(9, LOW);
-    delay(20);
-    digitalWrite(9, HIGH);
-    delay(20);
-    digitalWrite(2, HIGH);
-    delay(20);
-    digitalWrite(3, HIGH);
-    delay(20);
-    digitalWrite(4, HIGH);
-    delay(20);
-    digitalWrite(5, HIGH);
-    delay(20);
-    digitalWrite(6, HIGH);
-    delay(20);
-    digitalWrite(7, HIGH);
-    delay(20);
-    digitalWrite(8, HIGH);
-
+    crawl();
+    crawl();
 }
 
+void crawl(){
+    reset();
 
+    fastDelay();
+    digitalWrite(9, HIGH);
+    fastDelay();
+    digitalWrite(3, HIGH);
+    fastDelay();
+    digitalWrite(4, HIGH);
+    fastDelay();
+    digitalWrite(5, HIGH);
+    fastDelay();
+    digitalWrite(6, HIGH);
+    fastDelay();
+    digitalWrite(7, HIGH);
+    fastDelay();
+    digitalWrite(7, LOW);
+    fastDelay();
+    digitalWrite(6, LOW);
+    fastDelay();
+    digitalWrite(5, LOW);
+    fastDelay();
+    digitalWrite(4, LOW);
+    fastDelay();
+    digitalWrite(3, LOW);
+    fastDelay();
+    digitalWrite(9, LOW);
+}
+
+void bannanas(){
+  outerIn();
+  innerOut();
+  backAndForth();
+  innerOut();
+  allOn();
+}
