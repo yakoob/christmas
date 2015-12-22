@@ -9,6 +9,15 @@ YunClient net;
 int soundAnalogPin = 0;
 int sound_value = 0;
 
+
+/**
+* pin 9 : side yard: left palm tree
+* pin 3 : side yard: right palm tree
+* pin 4 : front house: left palm tree
+* pin 5 : front house: right palm tree
+* pin 6 : house: left roof
+* pin 7 : house: right roof
+*/
 void setup() {
 
 
