@@ -40,9 +40,39 @@ class HttpClientService {
             path = path + 5
             println("http tell lights: ALL_BLINK")
 
-        } else if (status == Status.BACK_AND_FORTH){
+        } else if (status == Status.CRAWL){
 
             path = path + 6
+            println("http tell lights: BACK_AND_FORTH")
+
+
+        } else if (status == Status.CRAWL){
+
+            path = path + 6
+            println("http tell lights: BACK_AND_FORTH")
+
+
+        } else if (status == Status.BACK_AND_FORTH){
+
+            path = path + 7
+            println("http tell lights: BACK_AND_FORTH")
+
+
+        } else if (status == Status.OUTER_IN){
+
+            path = path + 8
+            println("http tell lights: BACK_AND_FORTH")
+
+
+        } else if (status == Status.INNER_OUT){
+
+            path = path + 9
+            println("http tell lights: BACK_AND_FORTH")
+
+
+        } else if (status == Status.BANANAS){
+
+            path = path + 10
             println("http tell lights: BACK_AND_FORTH")
 
 

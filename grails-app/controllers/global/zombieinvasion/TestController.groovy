@@ -10,18 +10,23 @@ class TestController {
 
     }
 
-    def cool(){
-
-        akkaService.christmasManager.tell("PLAY_CoolLights", akkaService.actorNoSender())
-        render "PLAY_CoolLights"
-
-    }
-
     def jingle() {
 
         akkaService.christmasManager.tell("PLAY_JingleBells", akkaService.actorNoSender())
         render "PLAY_JingleBells"
 
+    }
+
+    def jingleBeats() {
+        def message = new ShowEvent(ShowEvent.Status.PLAY, "jingle_beats")
+        akkaService.christmasManager.tell(message, akkaService.actorNoSender())
+        render message
+    }
+
+    def sugarPlum() {
+        def message = new ShowEvent(ShowEvent.Status.PLAY, "sugar_plum_fairy")
+        akkaService.christmasManager.tell(message, akkaService.actorNoSender())
+        render message
     }
 
     def white() {
@@ -30,7 +35,6 @@ class TestController {
         render "PLAY_WhiteChristmas"
 
     }
-
 
     def stop() {
 

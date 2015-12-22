@@ -6,7 +6,8 @@ import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 import grails.converters.JSON
 
-enum Status {ON,BLINK,OFF,ALL_ON,ALL_OFF,ALL_BLINK,BACK_AND_FORTH}
+enum Status {ON,BLINK,OFF,ALL_ON,ALL_OFF,ALL_BLINK,CRAWL,BACK_AND_FORTH,INNER_OUT,OUTER_IN,BANANAS
+}
 
 @Log
 class LightManager extends BaseActor {
@@ -27,7 +28,32 @@ class LightManager extends BaseActor {
     @Override
     void onReceive(Object message) throws Exception{
 
-        if (message instanceof String) {
+        if (message instanceof ShowEvent) {
+
+            this.currentSong = message.song
+
+            println "lightManager: $message"
+
+            if (message.status == ShowEvent.Status.PLAY) {
+
+                if (!isIdle()) {
+                    println "can not run PLAY_JingleBells because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
+                    return
+                }
+
+                reset()
+
+                actionMusicBellsMusic("play", this.currentSong)
+
+                jingleBeats().each { scheduleLight(it.node, it.status, it.when) }
+
+                scheduleLight("0", Status.ALL_ON, 3000l)
+
+            } else if (message.status == ShowEvent.Status.STOP) {
+
+            }
+
+        } else if (message instanceof String) {
 
             if (message == "PLAY_JingleBells"){
 
@@ -365,55 +391,113 @@ class LightManager extends BaseActor {
     }
 
 
-    def coolLights(){
+    def jingleBeats(){
 
         def instructions = []
         def nodes = ["9","3","4","5","6","7"]
         def randomNodes = nodes.clone()
 
+        instructions.add(["node":"0", "status":Status.ALL_OFF, "when":350])
+
+        6.times {
+            instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+        }
+
+        instructions.add(["node":"0", "status":Status.ALL_ON, "when":6000])
+
         3.times {
 
-            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":350])
-
-            2.times {
-                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            11.times {
+                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+                instructions.add(["node":"0", "status":Status.OUTER_IN, "when":0])
+                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+                instructions.add(["node":"0", "status":Status.INNER_OUT, "when":0])
             }
 
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
-
-            4.times {
-                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
-                instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+            14.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
+                instructions.add(["node":"0", "status":Status.OUTER_IN, "when":0])
             }
 
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
-
-            instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
-            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":2000])
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
-
-            4.times {
-                nodes.each { instructions.add(["node":"$it", "status":Status.ON, "when":350]) }
-                nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":350]) }
+            10.times {
+                instructions.add(["node":"0", "status":Status.BANANAS, "when":50])
             }
 
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
-
-            2.times {
-                instructions.add(["node":"0", "status":Status.BACK_AND_FORTH, "when":1000])
+            5.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
             }
-
-            4.times {
-                Collections.shuffle(randomNodes)
-                instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":350])
-                instructions.add(["node":"0", "status":Status.ALL_ON, "when":350])
-            }
-
-            instructions.add(["node":"0", "status":Status.ALL_ON, "when":2000])
-
-            nodes.reverse().each { instructions.add(["node":"$it", "status":Status.OFF, "when":300]) }
 
         }
+
+        2.times {
+            instructions.add(["node":"0", "status":Status.OUTER_IN, "when":50])
+        }
+
+        8.times {
+            instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
+        }
+
+        5.times {
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+            instructions.add(["node":"0", "status":Status.OUTER_IN, "when":0])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+            instructions.add(["node":"0", "status":Status.INNER_OUT, "when":0])
+        }
+
+        5.times {
+            instructions.add(["node":"0", "status":Status.BANANAS, "when":50])
+        }
+
+        10.times {
+            Collections.shuffle(randomNodes)
+            instructions.add(["node":"${randomNodes.first()}", "status":Status.BLINK, "when":350])
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":350])
+        }
+
+        11.times {
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+            instructions.add(["node":"0", "status":Status.OUTER_IN, "when":0])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":50])
+            instructions.add(["node":"0", "status":Status.INNER_OUT, "when":0])
+        }
+
+        3.times {
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+            instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":350])
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":200])
+            instructions.add(["node":"0", "status":Status.ALL_OFF, "when":200])
+        }
+
+        2.times {
+            4.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":250])
+                instructions.add(["node":"0", "status":Status.OUTER_IN, "when":0])
+            }
+
+        }
+
+        instructions.add(["node":"0", "status":Status.ALL_ON, "when":100])
+        instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
+
+        6.times {
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":100])
+            instructions.add(["node":"0", "status":Status.ALL_ON, "when":3000])
+
+            4.times {
+                instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":4000])
+            }
+        }
+
+        instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
+        instructions.add(["node":"0", "status":Status.ALL_OFF, "when":3000])
+
+        16.times {
+            instructions.add(["node":"0", "status":Status.BANANAS, "when":500])
+        }
+
+        instructions.add(["node":"0", "status":Status.ALL_ON, "when":100])
 
         return instructions
 
