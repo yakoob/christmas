@@ -19,9 +19,7 @@ class AkkaService {
 
     void init() {
         system = ActorSystem.create("christmas")
-        def cluster = Cluster.get(system)
         actorSetup()
-        // subscribeToGlobalSubscriptions()
     }
 
     ActorSystem getSystem() {
