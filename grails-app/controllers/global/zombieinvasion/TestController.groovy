@@ -5,16 +5,13 @@ class TestController {
     def akkaService
 
     def index() {
-
         render "test"
-
     }
 
     def jingle() {
-
-        akkaService.christmasManager.tell("PLAY_JingleBells", akkaService.actorNoSender())
-        render "PLAY_JingleBells"
-
+        def message = new ShowEvent(ShowEvent.Status.PLAY, "dog_jingle_bells")
+        akkaService.christmasManager.tell(message, akkaService.actorNoSender())
+        render message
     }
 
     def jingleBeats() {
@@ -30,17 +27,17 @@ class TestController {
     }
 
     def white() {
-
-        akkaService.christmasManager.tell("PLAY_WhiteChristmas", akkaService.actorNoSender())
-        render "PLAY_WhiteChristmas"
-
+        def message = new ShowEvent(ShowEvent.Status.PLAY, "white_christmas")
+        akkaService.christmasManager.tell(message, akkaService.actorNoSender())
+        render message
     }
 
     def stop() {
 
-        akkaService.christmasManager.tell("STOP_SHOW", akkaService.actorNoSender())
+        def message = new ShowEvent(ShowEvent.Status.STOP, null)
+        akkaService.christmasManager.tell(message, akkaService.actorNoSender())
+        render message
 
-        render "stop"
     }
 
 }

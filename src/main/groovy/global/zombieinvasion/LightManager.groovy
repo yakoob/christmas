@@ -34,7 +34,7 @@ class LightManager extends BaseActor {
 
             println "lightManager: $message"
 
-            if (message.status == ShowEvent.Status.PLAY) {
+            if (message.status == ShowEvent.Status.PLAY && message.song) {
 
                 if (!isIdle()) {
                     println "can not run PLAY_JingleBells because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
@@ -51,65 +51,12 @@ class LightManager extends BaseActor {
 
             } else if (message.status == ShowEvent.Status.STOP) {
 
-            }
-
-        } else if (message instanceof String) {
-
-            if (message == "PLAY_JingleBells"){
-
-                println "LightManager: PLAY_JingleBells"
-
-                if (!isIdle()) {
-                    println "can not run PLAY_JingleBells because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
-                    return
-                }
-
-                reset()
-
-                currentSong = "dog_jingle_bells"
-
-                actionMusicBellsMusic("play", this.currentSong)
-
-                jingleBells().each { scheduleLight(it.node, it.status, it.when) }
-
-                scheduleLight("0", Status.ALL_ON, 3000l)
-
-            } else if (message == "PLAY_CoolLights"){
-
-                if (!isIdle()) {
-                    println "can not run PLAY_CoolLights because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
-                    return
-                }
-
-                reset()
-
-                currentSong = "christmas_is_coming"
-                actionMusicBellsMusic("play", this.currentSong)
-
-                println "playing cool lights"
-                coolLights().each { scheduleLight(it.node, it.status, it.when) }
-                scheduleLight("0", Status.ALL_ON, 3000l)
-
-            } else if (message == "PLAY_WhiteChristmas"){
-
-                if (!isIdle()) {
-                    println "can not run PLAY_WhiteChristmas because a program is running... timersTotalWhen:$timersTotalWhen | when:$when... Program will be idle in ${(when-timersTotalWhen)/60} seconds"
-                    return
-                }
-
-                reset()
-
-                currentSong = "white_christmas"
-                actionMusicBellsMusic("play", this.currentSong)
-
-                println "playing white_christmas"
-                whiteChristmasLights().each { scheduleLight(it.node, it.status, it.when) }
-                scheduleLight("0", Status.ALL_ON, 3000l)
-
-            } else if (message == "STOP_LIGHTS") {
-
                 reset()
                 this.lightManagerStatus = Status.OFF
+
+            } else {
+
+                println "unexpected event..."
 
             }
 
@@ -481,11 +428,11 @@ class LightManager extends BaseActor {
         instructions.add(["node":"0", "status":Status.ALL_ON, "when":100])
         instructions.add(["node":"0", "status":Status.ALL_ON, "when":4000])
 
-        6.times {
+        5.times {
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":100])
             instructions.add(["node":"0", "status":Status.ALL_ON, "when":3000])
 
-            4.times {
+            5.times {
                 instructions.add(["node":"0", "status":Status.ALL_BLINK, "when":4000])
             }
         }
@@ -493,7 +440,7 @@ class LightManager extends BaseActor {
         instructions.add(["node":"0", "status":Status.ALL_OFF, "when":100])
         instructions.add(["node":"0", "status":Status.ALL_OFF, "when":3000])
 
-        16.times {
+        18.times {
             instructions.add(["node":"0", "status":Status.BANANAS, "when":500])
         }
 
