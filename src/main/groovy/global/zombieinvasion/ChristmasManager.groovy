@@ -21,7 +21,10 @@ class ChristmasManager extends BaseActor {
 
         if (message instanceof ShowEvent){
             lightManager.tell(message, self)
+        } else if (message instanceof String){
+            lightManager.tell(message, self)
         }
+
 
     }
 

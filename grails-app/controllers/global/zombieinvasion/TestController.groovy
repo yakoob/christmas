@@ -40,4 +40,13 @@ class TestController {
 
     }
 
+    def on(){
+        akkaService.christmasManager.tell("ON", akkaService.actorNoSender())
+        render "on"
+    }
+
+    def off(){
+        stop()
+    }
+
 }
