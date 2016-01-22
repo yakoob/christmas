@@ -45,7 +45,7 @@ class LightManager extends BaseActor {
 
                 reset()
 
-                actionMusicBellsMusic("play", this.currentSong)
+                actionMusic("play", this.currentSong)
 
                 showService.getInstrucations(message)?.each { scheduleLight(it.node, it.status, it.when) }
 
@@ -76,7 +76,7 @@ class LightManager extends BaseActor {
         this.lightManagerStatus = Status.ON
         timersTotalWhen = 0l
         when = 0l
-        actionMusicBellsMusic("stop", this.currentSong)
+        actionMusic("stop", this.currentSong)
         stopAllLights()
     }
 
@@ -95,7 +95,7 @@ class LightManager extends BaseActor {
 
     }
 
-    def actionMusicBellsMusic(String action, String song){
+    def actionMusic(String action, String song){
         def res = [:]
         res.action = action
         res.song = song
