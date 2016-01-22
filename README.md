@@ -8,4 +8,4 @@ Controls the Android tablet as well as the Arduiono-Relay Modlue for automation 
 Enables playing and stopping of songs via MQTT using android sdk.
 
 ##MediaController:
-Arduino application controlling a relay module by exposing an API for various lighing methods via REST.  
+Arduino application controlling a relay module by exposing an API for various lighting methods via REST.  
